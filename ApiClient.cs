@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using CH360.APIClient.Sample.Models;
-using CH360.APIClient.Sample.Requests;
 using CH360.APIClient.Sample.Responses.Classifier;
 using CH360.APIClient.Sample.Responses.Document;
 using CH360.APIClient.Sample.Responses.Document.Classify;
@@ -170,17 +169,15 @@ namespace CH360.APIClient.Sample
 
         private async Task<string> GetTokenAsync(string clientId, string clientSecret)
         {
-            // TODO: Use the form endpoint instead of JSON
-            var getTokenRequest = new GetTokenRequest
+            var request = new ApiRequest<GetTokenResponse>("/oauth/token", _httpClient);
+            var formValues = new List<KeyValuePair<string, string>>
             {
-                ClientId = clientId,
-                ClientSecret = clientSecret
+                new KeyValuePair<string, string>("client_id", clientId),
+                new KeyValuePair<string, string>("client_secret", clientSecret)
             };
 
-            var request = new ApiRequest<GetTokenResponse>("/oauth/token", _httpClient);
-            var getTokenResponse = await request.Issue(getTokenRequest, HttpMethod.Post);
-
-            return getTokenResponse.AccessToken;
+            var response = await request.IssueForm(formValues);
+            return response.AccessToken;
         }
     }
 }

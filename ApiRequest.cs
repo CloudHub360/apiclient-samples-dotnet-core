@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -49,6 +50,14 @@ namespace CH360.APIClient.Sample
             method = method ?? HttpMethod.Post;
 
             using (var request = new HttpRequestMessage(method, _requestUri) { Content = content })
+            using (var response = await _httpClient.SendAsync(request))
+            {
+                return await HandleResponse<TResponse>(response);
+            }
+        }
+        public async Task<TResponse> IssueForm(List<KeyValuePair<string,string>> values)
+        {
+            using (var request = new HttpRequestMessage(HttpMethod.Post, _requestUri) { Content = new FormUrlEncodedContent(values) })
             using (var response = await _httpClient.SendAsync(request))
             {
                 return await HandleResponse<TResponse>(response);
