@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using CH360.APIClient.Sample.Models;
+using CH360.APIClient.Sample.Requests;
 using CH360.APIClient.Sample.Responses.Classifier;
 using CH360.APIClient.Sample.Responses.Document;
 using CH360.APIClient.Sample.Responses.Document.Classify;
@@ -30,7 +31,7 @@ namespace CH360.APIClient.Sample
         /// <summary>
         /// Create a new classifier. After creation, samples must be added to the classifier before it can be used to classify documents.
         /// </summary>
-        /// <param name="classifierName">The desired name for the Classifier</param>
+        /// <param name="classifierName">The desired name for the classifier</param>
         /// <returns>The created classifier</returns>
         /// <remarks>See https://cloudhub360.readme.io/v1.0/reference#classifier-resource for an introduction to classifiers.</remarks>
         /// <remarks>See https://cloudhub360.readme.io/v1.0/reference#create-classifier for documentation of this endpoint</remarks>
@@ -41,6 +42,20 @@ namespace CH360.APIClient.Sample
             var request = new ApiRequest<ClassifierResponse>($"/classifiers/{classifierName}", _httpClient);
             var response = await request.Issue(request, HttpMethod.Post);
             return new Classifier(response.Name);
+        }
+
+        /// <summary>
+        /// Delete a classifier.
+        /// </summary>
+        /// <param name="classifierName">The name of the classifier</param>
+        /// <remarks>See https://cloudhub360.readme.io/v1.0/reference#delete-classifier for documentation of this endpoint</remarks>
+        /// <remarks>This request succeeds even if the specified classifier does not exist.</remarks>
+        public async Task DeleteClassifier(string classifierName)
+        {
+            if (classifierName == null) throw new ArgumentNullException(nameof(classifierName));
+
+            var request = new ApiRequest<EmptyResponse>($"/classifiers/{classifierName}", _httpClient);
+            var response = await request.Issue(request, HttpMethod.Delete);
         }
 
         /// <summary>
