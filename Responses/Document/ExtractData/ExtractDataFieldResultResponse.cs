@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace CH360.Platform.WebApi.Responses.ExtractData
+namespace CH360.APIClient.Sample.Responses.Document.ExtractData
 {
     public class ExtractDataFieldResultResponse
     {

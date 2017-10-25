@@ -5,6 +5,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using CH360.APIClient.Sample.Models;
 using CH360.APIClient.Sample.Requests;
 using CH360.APIClient.Sample.Responses;
@@ -13,9 +15,7 @@ using CH360.APIClient.Sample.Responses.Document;
 using CH360.APIClient.Sample.Responses.Document.Classify;
 using CH360.APIClient.Sample.Responses.Extractor;
 using CH360.APIClient.Sample.Responses.Token;
-using CH360.Platform.WebApi.Responses.ExtractData;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using CH360.APIClient.Sample.Responses.Document.ExtractData;
 
 namespace CH360.APIClient.Sample
 {
