@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using CH360.APIClient.Sample.Models;
+using Newtonsoft.Json.Linq;
 
 namespace CH360.APIClient.Sample
 {
@@ -96,13 +97,31 @@ namespace CH360.APIClient.Sample
             var extractor = await apiClient.CreateExtractor(ExtractorName, ExtractorConfigurationFile);
 
             // Create a document to extract data from
-            var extractDocument = await apiClient.CreateDocument(ExtractorDocumentFile);
+            var document = await apiClient.CreateDocument(ExtractorDocumentFile);
 
-            // Extract data
-            var extractDataResponse = await apiClient.ExtractData(extractDocument, extractor);
+            // Extract data to a response type
+            var extractDataResponse = await apiClient.ExtractData(document, extractor);
             foreach (var fieldResult in extractDataResponse.FieldResults)
             {
                 Console.WriteLine($"{fieldResult.FieldName}: {fieldResult?.Result?.Text} Rejected={fieldResult?.Result?.Rejected}");
+            }
+
+            // Instead of deserialising to a response type, you can
+            // use JSONPath to select just the data we need from the response.
+
+            // Here, we are selecting an enumerable of all the field names then
+            // getting the text for every field
+            var jObject = await apiClient.ExtractDataToJObject(document, extractor);
+            var fieldNameTokens = jObject.SelectTokens("field_results[*].field_name");
+
+            foreach (var token in fieldNameTokens)
+            {
+                var fieldName = token.Value<string>();
+
+                var text = jObject
+                    .SelectToken($"field_results[?(@.field_name=='{fieldName}')].result.text");
+
+                Console.WriteLine($"{token}: {text}");
             }
         }
     }

@@ -7,12 +7,15 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using CH360.APIClient.Sample.Models;
 using CH360.APIClient.Sample.Requests;
+using CH360.APIClient.Sample.Responses;
 using CH360.APIClient.Sample.Responses.Classifier;
 using CH360.APIClient.Sample.Responses.Document;
 using CH360.APIClient.Sample.Responses.Document.Classify;
 using CH360.APIClient.Sample.Responses.Extractor;
 using CH360.APIClient.Sample.Responses.Token;
 using CH360.Platform.WebApi.Responses.ExtractData;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace CH360.APIClient.Sample
 {
@@ -235,6 +238,32 @@ namespace CH360.APIClient.Sample
             var response = await request.Issue(request, HttpMethod.Post);
 
             return response;
+        }
+
+        /// <summary>
+        /// Extract data from the specified document using an extractor
+        /// </summary>
+        /// <param name="document">A document created with the CreateDocument method</param>
+        /// <param name="extractor">The extractor to use</param>
+        /// <returns>A JObject containing the deserialising extraction results response</returns>
+        public async Task<JObject> ExtractDataToJObject(Document document, Extractor extractor)
+        {
+            if (document == null) throw new ArgumentNullException(nameof(document));
+            if (extractor == null) throw new ArgumentNullException(nameof(extractor));
+
+            using (var request = new HttpRequestMessage(HttpMethod.Post, $"/documents/{document.ID}/extract/{extractor.Name}"))
+            using (var response = await _httpClient.SendAsync(request))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseJson = await response.Content.ReadAsStringAsync();
+                    return JObject.Parse(responseJson);
+                }
+
+                var responseString = await response.Content.ReadAsStringAsync();
+                var error = JsonConvert.DeserializeObject<ErrorResponse>(responseString);
+                throw new ApiException(error.Message, response);
+            }
         }
 
         private async Task<string> GetTokenAsync(string clientId, string clientSecret)
