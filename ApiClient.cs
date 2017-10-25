@@ -10,7 +10,9 @@ using CH360.APIClient.Sample.Requests;
 using CH360.APIClient.Sample.Responses.Classifier;
 using CH360.APIClient.Sample.Responses.Document;
 using CH360.APIClient.Sample.Responses.Document.Classify;
+using CH360.APIClient.Sample.Responses.Extractor;
 using CH360.APIClient.Sample.Responses.Token;
+using CH360.Platform.WebApi.Responses.ExtractData;
 
 namespace CH360.APIClient.Sample
 {
@@ -180,6 +182,59 @@ namespace CH360.APIClient.Sample
 
                     }).ToList()
             };
+        }
+
+        /// <summary>
+        /// Create a new extractor from an extractor configuration file
+        /// </summary>
+        /// <param name="extractorName">The desired name for the extractor</param>
+        /// <param name="extractorConfigurationFilePath">The path to the extractor configuration file</param>
+        /// <returns>The created extractor</returns>
+        /// <remarks>See https://cloudhub360.readme.io/v1.0/reference#create-extractor for documentation of this endpoint</remarks>
+        public async Task<Extractor> CreateExtractor(string extractorName, string extractorConfigurationFilePath)
+        {
+            if (extractorName == null) throw new ArgumentNullException(nameof(extractorName));
+            if (extractorConfigurationFilePath == null) throw new ArgumentNullException(nameof(extractorConfigurationFilePath));
+
+            using (var stream = File.OpenRead(extractorConfigurationFilePath))
+            {
+                var content = new StreamContent(stream);
+                var request = new ApiRequest<ExtractorResponse>($"/extractors/{extractorName}", _httpClient);
+                var response = await request.IssueBinary(content, HttpMethod.Post);
+
+                return new Extractor(response.Name);
+            }
+        }
+
+        /// <summary>
+        /// Delete an extractor
+        /// </summary>
+        /// <param name="extractorName">The name of the extractor</param>
+        /// <remarks>See https://cloudhub360.readme.io/v1.0/reference#delete-extractor for documentation of this endpoint</remarks>
+        /// <remarks>This request succeeds even if the specified extractor does not exist.</remarks>
+        public async Task DeleteExtractor(string extractorName)
+        {
+            if (extractorName == null) throw new ArgumentNullException(nameof(extractorName));
+
+            var request = new ApiRequest<EmptyResponse>($"/extractors/{extractorName}", _httpClient);
+            var response = await request.Issue(request, HttpMethod.Delete);
+        }
+
+        /// <summary>
+        /// Extract data from the specified document using an extractor
+        /// </summary>
+        /// <param name="document">A document created with the CreateDocument method</param>
+        /// <param name="extractor">The extractor to use</param>
+        /// <returns>The results of the extraction</returns>
+        public async Task<ExtractDataResponse> ExtractData(Document document, Extractor extractor)
+        {
+            if (document == null) throw new ArgumentNullException(nameof(document));
+            if (extractor == null) throw new ArgumentNullException(nameof(extractor));
+
+            var request = new ApiRequest<ExtractDataResponse>($"/documents/{document.ID}/extract/{extractor.Name}", _httpClient);
+            var response = await request.Issue(request, HttpMethod.Post);
+
+            return response;
         }
 
         private async Task<string> GetTokenAsync(string clientId, string clientSecret)
