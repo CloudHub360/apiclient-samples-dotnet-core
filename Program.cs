@@ -8,27 +8,17 @@ namespace CH360.APIClient.Sample
 {
     class Program
     {
+        // Before running this code you will need to specify your API Client Id & Secret in Settings.Cs.
+
+        // This code is intended as an illustration and simple starting point rather than resilient high-throughput
+        // production-ready code. In particular:
+        //  - there is no parallelisation of requests (which can give x10 overall throughput)
+        //  - no attempt is made to handle & retry transient network and service errors
+
+        // The code in this class depends on values in Settings.cs for paths to samples, configuration and document files.
+        // You will need to specify these values or disable relevant sections of code in the class before you can run
+        // successfully.
         private static readonly Uri ApiUri = new Uri("https://api.waives.io");
-        private const string ClientId = "<INSERT_YOUR_CLIENTID_HERE>";
-        private const string ClientSecret = "<INSERT_YOUR_CLIENTSECRET_HERE>";
-
-        // The name of the classifier that will be created
-        const string ClassifierName = "my-classifier";
-
-        // The path to ZIP file containing a valid set of sample documents to build a classifier from
-        const string SamplesZipFile = @"<INSERT-PATH-TO-ZIP-SAMPLES-FILE-HERE>";
-
-        // The path to an example document that will be classified
-        const string DocumentFile = @"<INSERT-PATH-TO-DOCUMENT-FILE-HERE>";
-
-        // The name of the extractor that will be created
-        const string ExtractorName = "my-extractor";
-
-        // The path to an extractor configuration file (*.fpxlc)
-        const string ExtractorConfigurationFile = @"<INSERT-PATH-TO-CONFIGURATION-FILE-HERE";
-
-        // The path to an example document that will have data extracted from it
-        const string ExtractorDocumentFile = @"<INSERT-PATH-TO-DOCUMENT-FILE-HERE";
 
         public static void Main(string[] args)
         {
@@ -39,17 +29,21 @@ namespace CH360.APIClient.Sample
         {
             using (var httpClient = new HttpClient { BaseAddress = ApiUri })
             {
-                var apiClient = new ApiClient(httpClient, ClientId, ClientSecret);
+                var apiClient = new ApiClient(httpClient, Settings.ClientId, Settings.ClientSecret);
 
                 // Create a classifier and samples to it from a samples zip file.
                 // This only needs doing once and is typically done during project deployment.
-                await CreateClassifier(apiClient, ClassifierName, SamplesZipFile);
+                await CreateClassifier(apiClient, Settings.ClassifierName, Settings.SamplesZipFile);
 
                 // Use the trained classifier to classify a document.
-                await ClassifyDocument(apiClient, ClassifierName, DocumentFile);
+                await ClassifyDocument(apiClient, Settings.ClassifierName, Settings.DocumentFile);
 
-                // Create an extractor and use it to extract data from a document
-                await ExtractData(apiClient);
+                // Create an extractor from an extractor configuration file (.fpxlc). You can skip this if you are using
+                // a Waives-provided extractor such as "waives.invoices.gb"
+                await CreateExtractor(apiClient, Settings.ExtractorName, Settings.ExtractorConfigurationFile);
+
+                // Use the extractor to extract data from a document
+                await ExtractData(apiClient, Settings.ExtractorName, Settings.DocumentFile);
             }
 
             Console.ReadLine();
@@ -80,48 +74,77 @@ namespace CH360.APIClient.Sample
             // Create a document from our input file
             var document = await apiClient.CreateDocument(documentFile);
             Console.WriteLine($"Created document with ID '{document.ID}' from file '{documentFile}'");
-
-            // Classify it using our classifier
-            var result = await apiClient.ClassifyDocument(document, classifier);
-            Console.WriteLine($"Classified document '{document.ID}'. Result:");
-            Console.WriteLine($"  Document Type: {result.DocumentType}");
-            Console.WriteLine($"  IsConfident: {result.IsConfident}");
-        }
-
-        private static async Task ExtractData(ApiClient apiClient)
-        {
-            // Delete any existing extractor with this name, if there is one
-            await apiClient.DeleteExtractor(ExtractorName);
-
-            // Create a new extractor using the configuration file
-            var extractor = await apiClient.CreateExtractor(ExtractorName, ExtractorConfigurationFile);
-
-            // Create a document to extract data from
-            var document = await apiClient.CreateDocument(ExtractorDocumentFile);
-
-            // Extract data to a response type
-            var extractDataResponse = await apiClient.ExtractData(document, extractor);
-            foreach (var fieldResult in extractDataResponse.FieldResults)
+            try
             {
-                Console.WriteLine($"{fieldResult.FieldName}: {fieldResult?.Result?.Text} Rejected={fieldResult?.Result?.Rejected}");
+
+                // Classify it using our classifier
+                var result = await apiClient.ClassifyDocument(document, classifier);
+                Console.WriteLine($"Classified document '{document.ID}'. Result:");
+                Console.WriteLine($"  Document Type: {result.DocumentType}");
+                Console.WriteLine($"  IsConfident: {result.IsConfident}");
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            finally
+            {
+                await apiClient.DeleteDocument(document);
+                Console.WriteLine($"Deleted document with ID '{document.ID}'");
             }
 
-            // Instead of deserialising to a response type, you can
-            // use JSONPath to select just the data we need from the response.
+        }
 
-            // Here, we are selecting an enumerable of all the field names then
-            // getting the text for every field
-            var jObject = await apiClient.ExtractDataToJObject(document, extractor);
-            var fieldNameTokens = jObject.SelectTokens("field_results[*].field_name");
+        private static async Task CreateExtractor(ApiClient apiClient, string extractorName, string extractorConfigurationFile)
+        {
+            // Delete any existing extractor with this name, if there is one
+            await apiClient.DeleteExtractor(extractorName);
 
-            foreach (var token in fieldNameTokens)
+            // Create a new extractor using the configuration file
+            await apiClient.CreateExtractor(extractorName, extractorConfigurationFile);
+            Console.WriteLine($"Created extractor {extractorName} from {extractorConfigurationFile}");
+        }
+
+        private static async Task ExtractData(ApiClient apiClient, string extractorName, string documentFile)
+        {
+            var extractor = new Extractor(extractorName);
+
+            // Create a document to extract data from
+            var document = await apiClient.CreateDocument(documentFile);
+            Console.WriteLine($"Created document with ID '{document.ID}' from file '{documentFile}'");
+
+            try
             {
-                var fieldName = token.Value<string>();
+                // You can extract data to a response type and get any result data you need
+                // var extractDataResponse = await apiClient.ExtractData(document, extractor);
 
-                var text = jObject
-                    .SelectToken($"field_results[?(@.field_name=='{fieldName}')].result.text");
+                // Or, instead of deserialising to a response type, you can
+                // use JSONPath to select just the data we need from the response.
 
-                Console.WriteLine($"{token}: {text}");
+                // Here, we are selecting an enumerable of all the field names then
+                // getting the text for every field
+                var jObject = await apiClient.ExtractDataToJObject(document, extractor);
+                var fieldNameTokens = jObject.SelectTokens("field_results[*].field_name");
+
+                foreach (var token in fieldNameTokens)
+                {
+                    var fieldName = token.Value<string>();
+                    jObject = null;
+                    var text = jObject
+                        .SelectToken($"field_results[?(@.field_name=='{fieldName}')].result.text");
+
+                    Console.WriteLine($"{token}: {text}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            finally
+            {
+                await apiClient.DeleteDocument(document);
+                Console.WriteLine($"Deleted document with ID '{document.ID}'");
             }
         }
     }
