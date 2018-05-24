@@ -131,6 +131,8 @@ namespace CH360.APIClient.Sample
 
         /// <summary>
         /// Create a new document and add the supplied file to it.
+        /// Remember to delete the document when you are finished with it, otherwise you will fill
+        /// your quota of documents.
         /// </summary>
         /// <param name="filePath">The path to the file</param>
         /// <returns>The ID of the created document</returns>
@@ -156,6 +158,19 @@ namespace CH360.APIClient.Sample
                     }).ToList()
                 };
             }
+        }
+
+        /// <summary>
+        /// Delete the specified document.
+        /// </summary>
+        /// <param name="document"></param>
+        /// <returns></returns>
+        public async Task DeleteDocument(Document document)
+        {
+            if (document == null) throw new ArgumentNullException(nameof(document));
+
+            var request = new ApiRequest<EmptyResponse>($"/documents/{document.ID}", _httpClient);
+            await request.Issue(request, HttpMethod.Delete);
         }
 
         /// <summary>
