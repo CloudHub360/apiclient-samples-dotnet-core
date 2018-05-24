@@ -8,7 +8,7 @@ namespace CH360.APIClient.Sample
 {
     class Program
     {
-        private static readonly Uri ApiUri = new Uri("https://api.cloudhub360.com");
+        private static readonly Uri ApiUri = new Uri("https://api.waives.io");
         private const string ClientId = "<INSERT_YOUR_CLIENTID_HERE>";
         private const string ClientSecret = "<INSERT_YOUR_CLIENTSECRET_HERE>";
 
