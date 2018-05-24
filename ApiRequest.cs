@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using CH360.APIClient.Sample.Responses;
+using Waives.APIClient.Sample.Responses;
 using Newtonsoft.Json;
 
-namespace CH360.APIClient.Sample
+namespace Waives.APIClient.Sample
 {
     internal class ApiRequest<TResponse>
     {

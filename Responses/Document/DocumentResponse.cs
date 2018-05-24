@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace CH360.APIClient.Sample.Responses.Document
+namespace Waives.APIClient.Sample.Responses.Document
 {
     internal class DocumentResponse
     {

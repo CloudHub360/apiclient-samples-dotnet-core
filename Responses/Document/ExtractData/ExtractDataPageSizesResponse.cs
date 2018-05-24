@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace CH360.APIClient.Sample.Responses.Document.ExtractData
+namespace Waives.APIClient.Sample.Responses.Document.ExtractData
 {
     public class ExtractDataPageSizesResponse
     {

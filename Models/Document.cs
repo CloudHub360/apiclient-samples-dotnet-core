@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CH360.APIClient.Sample.Models
+namespace Waives.APIClient.Sample.Models
 {
     public class Document
     {

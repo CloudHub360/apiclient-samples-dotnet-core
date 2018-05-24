@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace CH360.APIClient.Sample.Requests
+namespace Waives.APIClient.Sample.Requests
 {
     internal class GetTokenRequest
     {

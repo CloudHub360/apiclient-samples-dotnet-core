@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using CH360.APIClient.Sample.Responses.Document.ExtractData;
+using Waives.APIClient.Sample.Responses.Document.ExtractData;
 using Newtonsoft.Json;
 
-namespace CH360.APIClient.Sample.Responses.Document.ExtractData
+namespace Waives.APIClient.Sample.Responses.Document.ExtractData
 {
     public class ExtractDataResultResponse
     {

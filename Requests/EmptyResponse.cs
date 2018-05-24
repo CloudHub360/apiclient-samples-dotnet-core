@@ -1,4 +1,4 @@
-﻿namespace CH360.APIClient.Sample.Requests
+﻿namespace Waives.APIClient.Sample.Requests
 {
     public class EmptyResponse
     {

@@ -3,8 +3,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <AssemblyName>CH360.APIClient.Sample</AssemblyName>
-    <RootNamespace>CH360.APIClient.Sample</RootNamespace>
+    <AssemblyName>Waives.APIClient.Sample</AssemblyName>
+    <RootNamespace>Waives.APIClient.Sample</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

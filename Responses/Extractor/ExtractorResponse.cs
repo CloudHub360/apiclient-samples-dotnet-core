@@ -1,4 +1,4 @@
-﻿namespace CH360.APIClient.Sample.Responses.Extractor
+﻿namespace Waives.APIClient.Sample.Responses.Extractor
 {
     internal class ExtractorResponse
     {

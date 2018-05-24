@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace CH360.APIClient.Sample.Responses.Document.Classify
+namespace Waives.APIClient.Sample.Responses.Document.Classify
 {
     internal class ClassifyDocumentResponse
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 
-namespace CH360.APIClient.Sample
+namespace Waives.APIClient.Sample
 {
     public class ApiException : Exception
     {

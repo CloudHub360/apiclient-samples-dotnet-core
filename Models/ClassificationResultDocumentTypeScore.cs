@@ -1,4 +1,4 @@
-namespace CH360.APIClient.Sample.Models
+namespace Waives.APIClient.Sample.Models
 {
     public class ClassificationResultDocumentTypeScore
     {

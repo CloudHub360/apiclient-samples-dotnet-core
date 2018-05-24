@@ -7,17 +7,17 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using CH360.APIClient.Sample.Models;
-using CH360.APIClient.Sample.Requests;
-using CH360.APIClient.Sample.Responses;
-using CH360.APIClient.Sample.Responses.Classifier;
-using CH360.APIClient.Sample.Responses.Document;
-using CH360.APIClient.Sample.Responses.Document.Classify;
-using CH360.APIClient.Sample.Responses.Extractor;
-using CH360.APIClient.Sample.Responses.Token;
-using CH360.APIClient.Sample.Responses.Document.ExtractData;
+using Waives.APIClient.Sample.Models;
+using Waives.APIClient.Sample.Requests;
+using Waives.APIClient.Sample.Responses;
+using Waives.APIClient.Sample.Responses.Classifier;
+using Waives.APIClient.Sample.Responses.Document;
+using Waives.APIClient.Sample.Responses.Document.Classify;
+using Waives.APIClient.Sample.Responses.Extractor;
+using Waives.APIClient.Sample.Responses.Token;
+using Waives.APIClient.Sample.Responses.Document.ExtractData;
 
-namespace CH360.APIClient.Sample
+namespace Waives.APIClient.Sample
 {
     public class ApiClient
     {

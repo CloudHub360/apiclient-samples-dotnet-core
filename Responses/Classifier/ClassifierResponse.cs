@@ -1,4 +1,4 @@
-﻿namespace CH360.APIClient.Sample.Responses.Classifier
+﻿namespace Waives.APIClient.Sample.Responses.Classifier
 {
     internal class ClassifierResponse
     {

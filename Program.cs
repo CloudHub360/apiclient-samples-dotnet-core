@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using CH360.APIClient.Sample.Models;
+using Waives.APIClient.Sample.Models;
 using Newtonsoft.Json.Linq;
 
-namespace CH360.APIClient.Sample
+namespace Waives.APIClient.Sample
 {
     class Program
     {

@@ -1,4 +1,4 @@
-﻿namespace CH360.APIClient.Sample
+﻿namespace Waives.APIClient.Sample
 {
     static class Settings
     {

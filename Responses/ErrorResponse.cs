@@ -1,4 +1,4 @@
-﻿namespace CH360.APIClient.Sample.Responses
+﻿namespace Waives.APIClient.Sample.Responses
 {
     public class ErrorResponse
     {
