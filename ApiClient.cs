@@ -25,10 +25,11 @@ namespace Waives.APIClient.Sample
 
         public ApiClient(HttpClient httpClient, string clientId, string clientSecret)
         {
-            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            if (httpClient == null) throw new ArgumentNullException(nameof(httpClient));
             if (clientId == null) throw new ArgumentNullException(nameof(clientId));
             if (clientSecret == null) throw new ArgumentNullException(nameof(clientSecret));
 
+            _httpClient = httpClient;
             var token = GetTokenAsync(clientId, clientSecret).Result;
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }

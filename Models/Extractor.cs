@@ -8,7 +8,11 @@ namespace Waives.APIClient.Sample.Models
 
         public Extractor(string name)
         {
-            Name = name ?? throw new ArgumentNullException(nameof(name));
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+            Name = name;
         }
     }
 }

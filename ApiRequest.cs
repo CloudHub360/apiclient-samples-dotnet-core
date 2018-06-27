@@ -19,9 +19,12 @@ namespace Waives.APIClient.Sample
             {
                 throw new ArgumentNullException(nameof(requestUri));
             }
-
+            if (httpClient == null)
+            {
+                throw new ArgumentNullException(nameof(httpClient));
+            }
             _requestUri = requestUri;
-            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            _httpClient = httpClient;
         }
 
         public async Task<TResponse> Issue(HttpMethod method = null)
