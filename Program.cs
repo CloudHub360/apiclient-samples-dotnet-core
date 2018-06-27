@@ -22,7 +22,22 @@ namespace Waives.APIClient.Sample
 
         public static void Main(string[] args)
         {
-            Task.Run(() => MainAsync(args)).Wait();
+
+            try
+            {
+                Task.Run(() => MainAsync(args)).Wait();
+            }
+            catch (AggregateException e)
+            {
+                foreach (var exception in e.Flatten().InnerExceptions)
+                {
+                    Console.WriteLine(exception);
+                }
+            }
+            finally
+            {
+                Console.ReadLine();
+            }
         }
 
         static async Task MainAsync(string[] args)
@@ -43,10 +58,8 @@ namespace Waives.APIClient.Sample
                 await CreateExtractor(apiClient, Settings.ExtractorName, Settings.ExtractorConfigurationFile);
 
                 // Use the extractor to extract data from a document
-                await ExtractData(apiClient, Settings.ExtractorName, Settings.DocumentFile);
+                await ExtractData(apiClient, Settings.ExtractorName, Settings.ExtractorDocumentFile);
             }
-
-            Console.ReadLine();
         }
 
         private static async Task CreateClassifier(ApiClient apiClient, string classifierName, string samplesZipFile)
@@ -130,11 +143,21 @@ namespace Waives.APIClient.Sample
                 foreach (var token in fieldNameTokens)
                 {
                     var fieldName = token.Value<string>();
-                    jObject = null;
-                    var text = jObject
-                        .SelectToken($"field_results[?(@.field_name=='{fieldName}')].result.text");
+                    var fieldText = string.Empty;
+                    
+                    // Get the result for the specified field name
+                    var fieldResultToken = jObject
+                        .SelectToken($"field_results[?(@.field_name=='{fieldName}')].result");
 
-                    Console.WriteLine($"{token}: {text}");
+                    // If the result is not null then get its text property
+                    if (fieldResultToken.HasValues)
+                    {
+                        fieldText = fieldResultToken
+                            .SelectToken(".text")
+                            .ToString();
+                    }
+                        
+                    Console.WriteLine($"{fieldName}: {fieldText}");                    
                 }
             }
             catch (Exception ex)
