@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Waives.APIClient.Sample.Responses.Document.ExtractData
 {
-    public class ExtractDataPageSizesResponse
+    public class ExtractDataDocumentResponse
     {
         [JsonProperty("page_count")]
         public int PageCount { get; set; }

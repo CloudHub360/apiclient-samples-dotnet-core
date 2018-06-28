@@ -8,7 +8,7 @@ namespace Waives.APIClient.Sample.Responses.Document.ExtractData
         [JsonProperty("field_results")]
         public List<ExtractDataFieldResultResponse> FieldResults { get; set; }
 
-        [JsonProperty("page_sizes")]
-        public ExtractDataPageSizesResponse PageSizes { get; set; }
+        [JsonProperty("document")]
+        public ExtractDataDocumentResponse Document { get; set; }
     }
 }
